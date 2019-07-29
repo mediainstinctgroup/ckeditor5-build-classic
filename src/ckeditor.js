@@ -7,7 +7,7 @@
 import ClassicEditorBase from '@ckeditor/ckeditor5-editor-classic/src/classiceditor';
 
 import Essentials from '@ckeditor/ckeditor5-essentials/src/essentials';
-import UploadAdapter from '@ckeditor/ckeditor5-upload/src/base64uploadadapter';
+import UploadAdapter from '@samhammer/ckeditor5-simple-image-upload-plugin';
 import Autoformat from '@ckeditor/ckeditor5-autoformat/src/autoformat';
 import Bold from '@ckeditor/ckeditor5-basic-styles/src/bold';
 import Italic from '@ckeditor/ckeditor5-basic-styles/src/italic';
@@ -88,6 +88,26 @@ ClassicEditor.defaultConfig = {
 			'tableRow',
 			'mergeTableCells'
 		]
+	},
+	simpleImageUpload: {
+		onUpload: file => {
+			return new Promise( ( resolve, reject ) => {
+				const reader = new window.FileReader();
+
+				reader.addEventListener( 'load', () => {
+					resolve( reader.result );
+				} );
+
+				reader.addEventListener( 'error', err => {
+					reject( err );
+				} );
+
+				reader.addEventListener( 'abort', () => {
+					reject();
+				} );
+				reader.readAsDataURL( file );
+			} );
+		}
 	},
 	// This value must be kept in sync with the language defined in webpack.config.js.
 	language: 'en'
